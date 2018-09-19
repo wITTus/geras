@@ -13,8 +13,6 @@ def create_random_individuals(n, n_genes):
 
 
 class Pool:
-	layers = []
-
 	def __init__(self, n_genes, size=250, initializer="random"):
 
 		if initializer == 'random':
@@ -24,6 +22,7 @@ class Pool:
 		elif initializer == 'one':
 			self.pool = ['1' * n_genes] * size
 
+		self.layers = []
 		self.objective_scores = []
 		self.iterations_done = 0
 		self.objective = None
@@ -32,7 +31,7 @@ class Pool:
 	def add(self, layer):
 		self.layers.append(layer)
 
-	def compile(self, objective, metrics):
+	def compile(self, objective, metrics=None):
 		self.objective = objective
 		self.metrics = metrics
 
@@ -47,14 +46,17 @@ class Pool:
 				print '_' * line_length
 		print '=' * line_length
 
-	def fit(self, iterations=1000000, perfect_solution_score_threshold=1.0, new_best_callback_fn=None):
+	def fit(self, iterations=1000000, perfect_solution_score_threshold=1.0, new_best_callback_fn=None,
+	        periodic_callback_fn=None, verbose=False):
 
-		print('\nEvolving for {} iterations or max score of {}'.format(iterations, perfect_solution_score_threshold))
-		print
+		if verbose:
+			print('\nEvolving for {} iterations or max score of {}'.format(iterations, perfect_solution_score_threshold))
+			print
 
 		dynasty_best = 0
 
-		for _ in tqdm(range(iterations), unit=' Generations', file=sys.stdout):
+		iter_fn = tqdm(range(iterations), unit='Generation', file=sys.stdout) if verbose else range(iterations)
+		for _ in iter_fn:
 			self.objective_scores = self.objective.score(self.pool)
 
 			generation_best = max(self.objective_scores)
@@ -62,6 +64,9 @@ class Pool:
 			if new_best_callback_fn is not None and generation_best > dynasty_best:
 				dynasty_best = generation_best
 				new_best_callback_fn(self.metrics.apply(self.pool, self.objective_scores))
+
+			if periodic_callback_fn is not None and self.iterations_done % 1 == 0:
+				periodic_callback_fn(self.metrics.apply(self.pool, self.objective_scores))
 
 			if self.objective.reached_perfect_solution(self.objective_scores, perfect_solution_score_threshold):
 				break
@@ -74,7 +79,6 @@ class Pool:
 			self.pool = new_pool
 			self.iterations_done += 1
 
-		print
 
 	def evaluate(self):
 		best_score = max(self.objective_scores)
