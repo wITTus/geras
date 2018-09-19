@@ -1,4 +1,3 @@
-import heapq
 import random
 
 
@@ -44,14 +43,11 @@ def crossover_pool(pool, scores, new_pool_size):
 
 
 class Crossover:
-	def __init__(self, n_elites=4):
-		self.n_elites = n_elites
+	def __init__(self):
+		pass
 
-	def call(self, pool, scores):
-		pool_size = len(pool)
-		elite_pool = [pool[idx] for idx in map(scores.index, heapq.nlargest(self.n_elites, scores))]
-		new_pool = elite_pool + crossover_pool(pool, scores, pool_size - self.n_elites)
-
+	def call(self, pool, new_pool, scores):
+		new_pool.extend(crossover_pool(pool, scores, len(pool) - len(new_pool)))
 		return new_pool
 
 	def summary(self):

@@ -25,8 +25,8 @@ class Mutation:
 		self.mutation_rate = p
 		pass
 
-	def call(self, pool, _):
-		return mutate_pool(pool, self.mutation_rate)
+	def call(self, _, new_pool, __):
+		return mutate_pool(new_pool, self.mutation_rate)
 
 	def summary(self):
 		print 'Mutation'

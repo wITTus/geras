@@ -24,8 +24,8 @@ class Novelty(unittest.TestCase):
 	def setUp(self):
 		novelty_objective = NoveltyObjective(calculate_behavior, calculate_fitness)
 
+		self.model.add(Crossover())
 		self.model.add(Mutation(p=0.25))
-		self.model.add(Crossover(n_elites=4))
 		self.model.compile(objective=novelty_objective, metrics=['best_individual', 'best_score', 'iterations_done'])
 
 	def test_fit(self):

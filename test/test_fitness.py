@@ -18,8 +18,8 @@ class Fitness(unittest.TestCase):
 	def setUp(self):
 		fitness_objective = FitnessObjective(calculate_fitness)
 
+		self.model.add(Crossover())
 		self.model.add(Mutation(p=0.25))
-		self.model.add(Crossover(n_elites=4))
 		self.model.compile(objective=fitness_objective, metrics=['best_individual', 'best_score', 'iterations_done'])
 
 	def test_fit(self):
