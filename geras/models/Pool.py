@@ -1,6 +1,7 @@
 import random
 import sys
 
+import dill
 from tqdm import tqdm
 
 
@@ -50,7 +51,8 @@ class Pool:
 	        periodic_callback_fn=None, verbose=False):
 
 		if verbose:
-			print('\nEvolving for {} iterations or max score of {}'.format(iterations, perfect_solution_score_threshold))
+			print(
+				'\nEvolving for {} iterations or max score of {}'.format(iterations, perfect_solution_score_threshold))
 			print
 
 		dynasty_best = 0
@@ -79,7 +81,6 @@ class Pool:
 			self.pool = new_pool
 			self.iterations_done += 1
 
-
 	def evaluate(self):
 		best_score = max(self.objective_scores)
 		best_idx = self.objective_scores.index(best_score)
@@ -92,3 +93,7 @@ class Pool:
 			'pool': self.pool,  #
 			'scores': self.objective_scores  #
 		}  #
+
+	def save(self, filename):
+		with open(filename, 'w+') as fd:
+			dill.dump(self, fd)
